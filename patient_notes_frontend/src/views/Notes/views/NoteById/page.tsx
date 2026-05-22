@@ -51,11 +51,12 @@ export const NoteById = () => {
                   <span className="font-semibold">Audio:</span>{" "}
                   <a
                     href={note.fileUrl}
+                    download
                     target="_blank"
                     rel="noreferrer"
                     className="text-sky-600 underline hover:text-sky-700"
                   >
-                    Open audio file
+                    Download audio file
                   </a>
                 </p>
               )}

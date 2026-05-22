@@ -17,7 +17,8 @@ const {
   AWS_DEFAULT_REGION,
   AUDIO_BUCKET_NAME,
   AUDIO_FILE_PATH,
-  AWS_ENDPOINT_URL
+  AWS_ENDPOINT_URL,
+  AWS_PUBLIC_ENDPOINT_URL
 } = process.env;
 
 const envs = {
@@ -35,14 +36,32 @@ const envs = {
   awsDefaultRegion: AWS_DEFAULT_REGION,
   audioBucketName: AUDIO_BUCKET_NAME,
   audioFilePath: AUDIO_FILE_PATH,
-  awsEndpointUrl: AWS_ENDPOINT_URL
+  awsEndpointUrl: AWS_ENDPOINT_URL,
+  awsPublicEndpointUrl: AWS_PUBLIC_ENDPOINT_URL,
 };
 
 const checkEnvs = () => {
-  const values = Object.values(envs);
-  const missingEnvs = values.filter((value) => !value);
-  if (missingEnvs.length > 0) {
-    const missingKeys = Object.keys(envs).filter((key) => !envs[key as keyof typeof envs]);
+  const requiredKeys: Array<keyof typeof envs> = [
+    'port',
+    'frontendUrl',
+    'dbConnectionString',
+    'apiVersion',
+    'openRouterKey',
+    'summaryModel',
+    'openaiBaseUrl',
+    'deepgramApiKey',
+    'transcriptionModel',
+    'awsAccessKeyId',
+    'awsSecretAccessKey',
+    'awsDefaultRegion',
+    'audioBucketName',
+    'audioFilePath',
+    'awsEndpointUrl',
+  ];
+
+  const missingKeys = requiredKeys.filter((key) => !envs[key]);
+
+  if (missingKeys.length > 0) {
     throw new Error(
       `Warning: Missing environment variables: ${missingKeys.join(', ')}. Please check your .env file.`,
     );

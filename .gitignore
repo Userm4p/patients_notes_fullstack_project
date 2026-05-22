@@ -1,0 +1,12 @@
+# Root environment files (secrets)
+.env
+
+# Project-level environment files (secrets)
+patient_notes_backend/.env
+patient_notes_frontend/.env
+
+# Keep examples versioned
+!.env.example
+!patient_notes_backend/.env.example
+!patient_notes_frontend/.env.example
+localstack/

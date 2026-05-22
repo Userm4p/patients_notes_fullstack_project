@@ -28,9 +28,7 @@
     "typescript-eslint": "^8.59.4"
   },
   "scripts": {
-    "build:commonjs": "rimraf lib && tsc --target es5 --outDir lib --module commonjs --declaration",
-    "build:es": "rimraf es && tsc --target es6 --outDir es --module es6",
-    "build": "npm run build:commonjs && npm run build:es",
+    "build": "rimraf dist && tsc -p tsconfig.json",
     "ts": "ts-node src/",
     "prepublishOnly": "npm run build",
     "dev": "nodemon --watch",
@@ -38,11 +36,7 @@
     "format": "prettier --write ."
   },
   "files": [
-    "es",
-    "lib"
+    "dist"
   ],
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
-  "jsnext:main": "./es/index.js",
-  "module": "./es/index.js"
+  "main": "./dist/index.js"
 }

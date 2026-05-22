@@ -20,7 +20,7 @@ export class NotesService {
 
     if (note && note.filePath) {
       const signedUrl = await this.s3Repository.getSignedUrl(envs.audioBucketName!, note.filePath);
-      return { ...note.toJSON(), fileUrl: signedUrl };
+      return { ...note.toJSON(), fileUrl: this.toPublicSignedUrl(signedUrl) };
     }
 
     return note;
@@ -44,5 +44,19 @@ export class NotesService {
     const filePath = `notes/${patientId}/${Date.now()}.${fileType}`;
     await this.s3Repository.uploadFile(envs.audioBucketName!, filePath, audioBuffer, fileType);
     return this.notesRepository.createNote(content, patientId, summary, filePath);
+  }
+
+  private toPublicSignedUrl(signedUrl: string) {
+    if (!envs.awsPublicEndpointUrl) {
+      return signedUrl;
+    }
+
+    const internalUrl = new URL(signedUrl);
+    const publicEndpoint = new URL(envs.awsPublicEndpointUrl);
+
+    internalUrl.protocol = publicEndpoint.protocol;
+    internalUrl.host = publicEndpoint.host;
+
+    return internalUrl.toString();
   }
 }
