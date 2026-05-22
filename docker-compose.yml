@@ -1,0 +1,72 @@
+services:
+  frontend:
+    build:
+      context: ./patient_notes_frontend
+      dockerfile: Dockerfile
+    container_name: react_frontend
+    ports:
+      - "80:80"
+    volumes:
+      - ./patient_notes_frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./patient_notes_backend
+      dockerfile: Dockerfile
+    container_name: node_backend
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./patient_notes_backend:/app
+      - /app/node_modules
+    depends_on:
+      - postgres
+
+  localstack:
+    image: localstack/localstack:latest
+    container_name: localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=s3
+      - DEBUG=1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=us-east-1
+      - LOCALSTACK_AUTH_TOKEN=ls-Seki6979-CeHa-7598-Pajo-TeniLaxoea81
+    volumes:
+      - "./localstack:/var/lib/localstack"
+
+  s3-init:
+    image: amazon/aws-cli
+    depends_on:
+      - localstack
+    environment:
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      AWS_DEFAULT_REGION: us-east-1
+    entrypoint: >
+      /bin/sh -c "
+      sleep 5;
+      aws --endpoint-url=http://localstack:4566 s3api head-bucket --bucket my-bucket 2>/dev/null ||
+      aws --endpoint-url=http://localstack:4566 s3 mb s3://my-bucket;
+      "
+      
+  postgres:
+    image: postgres:17-alpine
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: appdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+volumes:
+  postgres_data:
+  localstack:
